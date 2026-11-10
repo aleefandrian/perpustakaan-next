@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  SISWA
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum LoanStatus {
+  ACTIVE
+  RETURNED
+  OVERDUE
+}
+
+model User {
+  id          Int        @id @default(autoincrement())
+  name        String
+  username    String     @unique
+  email       String     @unique
+  password    String
+  photo       String?
+  role        UserRole   @default(SISWA)
+  nisn        String?    @unique
+  employeeId  String?    @unique
+  className   String?
+  phone       String?
+  address     String?
+  status      UserStatus @default(ACTIVE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  loans       Loan[]
+
+  @@index([role])
+  @@index([status])
+  @@index([name])
+  @@index([username])
+  @@index([nisn])
+  @@map("users")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  books       Book[]
+
+  @@map("categories")
+}
+
+model Book {
+  id             Int       @id @default(autoincrement())
+  title          String
+  subtitle       String?
+  author         String
+  isbn           String?
+  publisher      String?
+  publishedYear  Int?
+  description    String?   @db.Text
+  genre          String?
+  categoryId     Int?
+  category       Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  coverId        String?
+  coverUrl       String
+  source         String?   @default("openlibrary")
+  sourceUrl      String?
+  totalStock     Int       @default(5)
+  availableStock Int       @default(5)
+  location       String?   @default("Rak A-1")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  loans          Loan[]
+
+  @@index([title])
+  @@index([author])
+  @@index([isbn])
+  @@index([publisher])
+  @@index([genre])
+  @@index([categoryId])
+  @@map("books")
+}
+
+model Loan {
+  id         Int        @id @default(autoincrement())
+  bookId     Int
+  book       Book       @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  userId     Int?
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  borrower   String
+  role       String?
+  borrowDate DateTime   @default(now())
+  dueDate    DateTime
+  returnDate DateTime?
+  status     LoanStatus @default(ACTIVE)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([bookId])
+  @@index([userId])
+  @@map("loans")
+}
