@@ -7,6 +7,7 @@ import {
   BookOpen,
   LayoutDashboard,
   BookmarkCheck,
+  ClipboardList,
   User,
   LogOut,
   Menu,
@@ -43,7 +44,17 @@ export default function SiswaLayout({ children }) {
   const navItems = [
     { label: "Dashboard", href: "/siswa/dashboard", icon: LayoutDashboard },
     { label: "Katalog Buku", href: "/siswa/books", icon: BookOpen },
-    { label: "Peminjaman Saya", href: "/siswa/borrowings", icon: BookmarkCheck },
+    {
+      label: "Pengajuan Peminjaman",
+      href: "/siswa/pengajuan-peminjaman",
+      icon: ClipboardList,
+    },
+    {
+      label: "Peminjaman Saya",
+      href: "/siswa/peminjaman",
+      alternateHrefs: ["/siswa/borrowings"],
+      icon: BookmarkCheck,
+    },
     { label: "Profil Saya", href: "/siswa/profile", icon: User },
   ];
 
@@ -76,7 +87,9 @@ export default function SiswaLayout({ children }) {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
-              const active = pathname === item.href;
+              const active =
+                pathname === item.href ||
+                (item.alternateHrefs && item.alternateHrefs.includes(pathname));
               const Icon = item.icon;
               return (
                 <Link
@@ -135,7 +148,9 @@ export default function SiswaLayout({ children }) {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-[#E5E7EB] bg-white px-4 py-3 space-y-2 animate-in slide-in-from-top-1">
             {navItems.map((item) => {
-              const active = pathname === item.href;
+              const active =
+                pathname === item.href ||
+                (item.alternateHrefs && item.alternateHrefs.includes(pathname));
               const Icon = item.icon;
               return (
                 <Link

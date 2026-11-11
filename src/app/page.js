@@ -21,12 +21,12 @@ export default async function Home() {
   const [totalBooks, activeLoans, totalCategories, recentLoans, recentBooks] =
     await Promise.all([
       prisma.book.count(),
-      prisma.loan.count({ where: { status: "ACTIVE" } }),
+      prisma.borrowing.count({ where: { status: "ACTIVE" } }),
       prisma.category.count(),
-      prisma.loan.findMany({
+      prisma.borrowing.findMany({
         take: 5,
-        orderBy: { borrowDate: "desc" },
-        include: { book: true },
+        orderBy: { borrowedAt: "desc" },
+        include: { book: true, user: true },
       }),
       prisma.book.findMany({
         take: 4,
@@ -207,8 +207,8 @@ export default async function Home() {
                       TRX-2026-00{trx.id}
                     </td>
                     <td className="px-5 py-3.5">
-                      <div className="font-medium text-[#27233A]">{trx.borrower}</div>
-                      <div className="text-[11px] text-[#858095]">{trx.role || "Anggota"}</div>
+                      <div className="font-medium text-[#27233A]">{trx.user?.name || trx.borrower || "Siswa"}</div>
+                      <div className="text-[11px] text-[#858095]">{trx.user?.className ? `Kelas ${trx.user.className}` : (trx.role || "Siswa")}</div>
                     </td>
                     <td className="px-5 py-3.5 text-[#4B465C]">
                       {trx.book?.title || "Buku"}

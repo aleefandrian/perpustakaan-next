@@ -8,6 +8,7 @@ import {
   BookOpen,
   Tag,
   ArrowLeftRight,
+  ClipboardList,
   CircleCheck,
   Users,
   UserRoundCog,
@@ -44,9 +45,17 @@ export const MENU_GROUPS = [
       },
       {
         label: "Data Peminjaman",
-        href: "/loans",
+        href: "/borrowings",
+        alternateHrefs: ["/loans"],
         matchPrefix: true,
+        excludePrefixes: ["/borrowings/requests"],
         icon: ArrowLeftRight,
+      },
+      {
+        label: "Pengajuan Peminjaman",
+        href: "/borrowings/requests",
+        matchPrefix: true,
+        icon: ClipboardList,
       },
       {
         label: "Pengembalian",

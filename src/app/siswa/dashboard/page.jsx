@@ -212,7 +212,7 @@ export default function SiswaDashboardPage() {
                     <div className="flex items-center gap-2 mt-2 text-xs text-[#4B465C]">
                       <Calendar className="w-3.5 h-3.5 text-[#858095]" />
                       <span>
-                        Dipinjam: {new Date(loan.borrowDate).toLocaleDateString("id-ID")}
+                        Dipinjam: {new Date(loan.borrowDate || loan.borrowedAt).toLocaleDateString("id-ID")}
                       </span>
                     </div>
                   </div>

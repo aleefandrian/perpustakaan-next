@@ -23,23 +23,36 @@ enum LoanStatus {
   OVERDUE
 }
 
+enum BorrowingRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BorrowingStatus {
+  ACTIVE
+  RETURNED
+}
+
 model User {
-  id          Int        @id @default(autoincrement())
-  name        String
-  username    String     @unique
-  email       String     @unique
-  password    String
-  photo       String?
-  role        UserRole   @default(SISWA)
-  nisn        String?    @unique
-  employeeId  String?    @unique
-  className   String?
-  phone       String?
-  address     String?
-  status      UserStatus @default(ACTIVE)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  loans       Loan[]
+  id                Int                @id @default(autoincrement())
+  name              String
+  username          String             @unique
+  email             String             @unique
+  password          String
+  photo             String?
+  role              UserRole           @default(SISWA)
+  nisn              String?            @unique
+  employeeId        String?            @unique
+  className         String?
+  phone             String?
+  address           String?
+  status            UserStatus         @default(ACTIVE)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  loans             Loan[]
+  borrowingRequests BorrowingRequest[]
+  borrowings        Borrowing[]
 
   @@index([role])
   @@index([status])
@@ -83,6 +96,8 @@ model Book {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   loans          Loan[]
+  borrowingRequests BorrowingRequest[]
+  borrowings        Borrowing[]
 
   @@index([title])
   @@index([author])
@@ -111,4 +126,49 @@ model Loan {
   @@index([bookId])
   @@index([userId])
   @@map("loans")
+}
+
+model BorrowingRequest {
+  id              Int                    @id @default(autoincrement())
+  userId          Int
+  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId          Int
+  book            Book                   @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  status          BorrowingRequestStatus @default(PENDING)
+  requestedAt     DateTime               @default(now())
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  rejectionReason String?                @db.Text
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  borrowing       Borrowing?
+
+  @@index([userId])
+  @@index([bookId])
+  @@index([status])
+  @@index([requestedAt])
+  @@map("borrowing_requests")
+}
+
+model Borrowing {
+  id          Int               @id @default(autoincrement())
+  userId      Int
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId      Int
+  book        Book              @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  requestId   Int?              @unique
+  request     BorrowingRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+  borrowedAt  DateTime          @default(now())
+  dueDate     DateTime
+  returnedAt  DateTime?
+  status      BorrowingStatus   @default(ACTIVE)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([bookId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([borrowedAt])
+  @@map("borrowings")
 }

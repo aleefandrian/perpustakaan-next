@@ -62,6 +62,7 @@ export async function authenticate(identifier, password) {
 
 /**
  * Retrieve current authenticated user from session cookie
+ * Throws Prisma database errors so they can be handled with 500/503 rather than 401
  */
 export async function getCurrentUser() {
   const session = await getSession();
@@ -92,7 +93,11 @@ export async function getCurrentUser() {
 
     return user;
   } catch (error) {
-    console.error("Error retrieving current user:", error);
+    console.error("Database error retrieving current user:", error);
+    // If it's a Prisma connection error (e.g. P1001), rethrow so caller can distinguish from 401
+    if (error?.code?.startsWith?.("P") || error?.name?.includes("Prisma")) {
+      throw error;
+    }
     return null;
   }
 }

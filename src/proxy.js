@@ -61,14 +61,15 @@ export function proxy(request) {
       );
     }
 
-    // Administrative APIs (Categories, Users, Book modifications)
+    // Administrative APIs (Categories, Users, Book modifications, Admin Borrowings)
     const isCategoryApi = pathname.startsWith("/api/categories");
     const isUserApi = pathname.startsWith("/api/users");
+    const isAdminApi = pathname.startsWith("/api/admin");
     const isBookMutationApi =
       pathname.startsWith("/api/books") &&
       ["POST", "PUT", "DELETE", "PATCH"].includes(request.method);
 
-    if (isCategoryApi || isUserApi || isBookMutationApi) {
+    if (isCategoryApi || isUserApi || isAdminApi || isBookMutationApi) {
       if (userRole !== ROLES.ADMIN) {
         return NextResponse.json(
           {
@@ -108,14 +109,14 @@ export function proxy(request) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (pathname === "/borrowings") {
+  if (pathname === "/loans") {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL("/login?callbackUrl=/loans", request.url));
+      return NextResponse.redirect(new URL("/login?callbackUrl=/borrowings", request.url));
     }
     if (userRole === ROLES.SISWA) {
-      return NextResponse.redirect(new URL("/siswa/borrowings", request.url));
+      return NextResponse.redirect(new URL("/siswa/peminjaman", request.url));
     }
-    return NextResponse.redirect(new URL("/loans", request.url));
+    return NextResponse.redirect(new URL("/borrowings", request.url));
   }
 
   if (pathname === "/returns") {

@@ -1,12 +1,17 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Plus, Search, ArrowUpDown, X, CheckCircle2, AlertCircle } from "lucide-react";
+import { Plus, ArrowUpDown, CheckCircle2, AlertCircle } from "lucide-react";
 import CategoryStats from "./CategoryStats";
 import CategoryTable from "./CategoryTable";
 import CategoryModal from "./CategoryModal";
 import DeleteCategoryDialog from "./DeleteCategoryDialog";
 import Pagination from "@/components/shared/Pagination";
+import Button from "@/components/ui/Button";
+import SearchInput from "@/components/ui/SearchInput";
+import Select from "@/components/ui/Select";
+import PageHeader from "@/components/ui/PageHeader";
+import PageContainer from "@/components/layout/PageContainer";
 import {
   fetchCategoriesList,
   createCategory,
@@ -161,114 +166,76 @@ export default function CategoryManagement() {
   };
 
   return (
-    <div className="space-y-6">
+    <PageContainer>
       {/* Toast Notification */}
       {toast && (
         <div
           role="alert"
           className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 p-4 rounded-xl shadow-lg border transition-all animate-in slide-in-from-bottom-3 duration-200 ${
             toast.type === "error"
-              ? "bg-rose-50 border-rose-200 text-rose-800"
+              ? "bg-red-50 border-red-200 text-red-700"
               : "bg-emerald-50 border-emerald-200 text-emerald-800"
           }`}
         >
           {toast.type === "error" ? (
-            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            <AlertCircle className="w-5 h-5 shrink-0 text-red-600" />
           ) : (
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
           )}
-          <span className="text-[13px] font-medium leading-snug">
-            {toast.message}
-          </span>
-          <button
-            type="button"
-            onClick={() => setToast(null)}
-            className="p-1 hover:opacity-75 rounded"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <span className="text-xs font-semibold">{toast.message}</span>
         </div>
       )}
 
-      {/* 1. Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-[#E5E7EB]">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#27233A]">
-            Kategori Buku
-          </h1>
-          <p className="text-[13px] text-[#858095] mt-1">
-            Kelola kategori koleksi buku perpustakaan.
-          </p>
-        </div>
-
-        {/* Action Button: Tambah Kategori */}
-        <button
-          type="button"
-          onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-2 h-10 px-5 text-sm font-semibold rounded-[9px] bg-[#6D28D9] text-white hover:bg-[#5B21B6] active:bg-[#4C1D95] shadow-xs hover:shadow-sm hover:scale-[1.01] transition-all duration-150 shrink-0 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" strokeWidth={2.5} />
-          <span>Tambah Kategori</span>
-        </button>
-      </div>
+      {/* 1. Header Toolbar */}
+      <PageHeader
+        title="Kategori Buku"
+        description="Kelola kategori klasifikasi koleksi buku perpustakaan."
+        actions={
+          <Button
+            variant="primary"
+            size="md"
+            icon={Plus}
+            onClick={handleOpenAdd}
+          >
+            Tambah Kategori
+          </Button>
+        }
+      />
 
       {/* 2. Statistics Cards */}
       <CategoryStats stats={stats} loading={loading && !stats} />
 
       {/* 3. Search and Sort Toolbar */}
-      <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {/* Search */}
-        <div className="relative flex-1">
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#858095] pointer-events-none">
-            <Search className="w-4 h-4" />
-          </div>
-          <input
-            type="text"
+        <div className="flex-1">
+          <SearchInput
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
             placeholder="Cari nama kategori..."
-            className="w-full h-10 pl-10 pr-9 bg-[#F8F9FC] border border-[#E5E7EB] rounded-[9px] text-[13px] text-[#27233A] placeholder-[#858095] hover:border-gray-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#6D28D9]/20 focus:border-[#6D28D9] transition-all"
           />
-          {localSearch && (
-            <button
-              type="button"
-              onClick={() => {
-                setLocalSearch("");
-                setSearch("");
-                setPage(1);
-              }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded text-[#858095] hover:text-[#27233A]"
-              title="Hapus pencarian"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
         </div>
 
         {/* Sort */}
-        <div className="relative w-full sm:w-56 shrink-0">
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#858095] pointer-events-none">
-            <ArrowUpDown className="w-3.5 h-3.5" />
-          </div>
-          <select
+        <div className="w-full sm:w-56 shrink-0">
+          <Select
             value={sort}
             onChange={(e) => {
               setSort(e.target.value);
               setPage(1);
             }}
             aria-label="Urutkan kategori"
-            className="w-full h-10 pl-9 pr-8 bg-[#F8F9FC] border border-[#E5E7EB] rounded-[9px] text-[12.5px] font-medium text-[#4B465C] hover:border-gray-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#6D28D9]/20 focus:border-[#6D28D9] transition-all cursor-pointer appearance-none"
           >
             <option value="name-asc">Nama: A - Z</option>
             <option value="name-desc">Nama: Z - A</option>
             <option value="date-desc">Dibuat: Terbaru</option>
             <option value="date-asc">Dibuat: Terlama</option>
-          </select>
+          </Select>
         </div>
       </div>
 
       {error && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
           <AlertCircle className="w-5 h-5 shrink-0" />
           <span>{error}</span>
         </div>
@@ -314,6 +281,6 @@ export default function CategoryManagement() {
         onConfirm={handleDeleteConfirm}
         isDeleting={isDeleting}
       />
-    </div>
+    </PageContainer>
   );
 }
