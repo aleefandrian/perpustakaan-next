@@ -114,10 +114,7 @@ function LoginForm() {
             </div>
           </div>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs text-white">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-medium text-[11.5px]">Sistem Aktif - v2.4 Pro</span>
-          </div>
+          
         </div>
 
         {/* Center Content */}
@@ -202,7 +199,7 @@ function LoginForm() {
                   autoFocus
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="admin@libra.perpus.ac.id atau NISN siswa"
+                  placeholder="Username atau NISN siswa"
                   className="w-full h-11 pl-10 pr-3.5 bg-[#F8F9FC] border border-[#E5E7EB] rounded-[10px] text-[13.5px] text-[#27233A] placeholder-[#858095] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#6D28D9]/20 focus:border-[#6D28D9] transition-all"
                 />
               </div>
