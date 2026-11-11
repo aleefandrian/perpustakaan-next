@@ -114,7 +114,7 @@ function LoginForm() {
             </div>
           </div>
 
-          
+
         </div>
 
         {/* Center Content */}
@@ -131,6 +131,8 @@ function LoginForm() {
           <p className="text-purple-100/90 text-sm sm:text-base leading-relaxed">
             Kelola ribuan koleksi buku, sirkulasi peminjaman, dan keanggotaan perpustakaan secara efisien dalam satu platform terintegrasi.
           </p>
+          <p className="text-purple-100/90 text-sm sm:text-base leading-relaxed">Default Admin : Username: admin | Password : admin123</p>
+          <p className="text-purple-100/90 text-sm sm:text-base leading-relaxed">Default Siswa : Username: siswa | Password : siswa123</p>
         </div>
 
         {/* Bottom Footer */}
